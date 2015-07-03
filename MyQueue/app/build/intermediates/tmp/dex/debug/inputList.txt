@@ -1,0 +1,6 @@
+C:\Users\pulla\AndroidProjects\MyQueue\app\build\intermediates\classes\debug
+C:\Users\pulla\AndroidProjects\MyQueue\app\build\intermediates\pre-dexed\debug\support-annotations-21.0.3-8321b7085915b8e92e3c4f2abaa2cba5bd56a9b9.jar
+C:\Users\pulla\AndroidProjects\MyQueue\app\build\intermediates\pre-dexed\debug\internal_impl-21.0.3-06214198d31e39c92193785e52be8104c091e13d.jar
+C:\Users\pulla\AndroidProjects\MyQueue\app\build\intermediates\pre-dexed\debug\classes-667e211e3a4627ddaee8c00aeb83e7ffa184f533.jar
+C:\Users\pulla\AndroidProjects\MyQueue\app\build\intermediates\pre-dexed\debug\classes-f186f134107b0d5862c62d9cc8fc021676967549.jar
+C:\Users\pulla\AndroidProjects\MyQueue\app\build\intermediates\pre-dexed\debug\classes-405bc508afb9e1adb5cea3d783a68a5926d88d57.jar

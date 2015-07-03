@@ -1,0 +1,218 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginTop="30dp"
+        android:background="#E6E6E6"
+        android:id="@+id/linearLayout">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Total Amount Payable"
+            android:layout_weight="2"
+            android:textSize="20dp"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Medium Text"
+            android:layout_weight="1"
+            android:id="@+id/total_amount"
+            android:textColor="#ffff4a4b" />
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select Payment Method"
+        android:id="@+id/textView2"
+        android:textSize="20dp"
+        android:layout_below="@+id/linearLayout"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="30dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#E6E6E6"
+        android:layout_marginTop="180dp"
+        android:id="@+id/linearLayout1"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:text="+ Credit Card"
+            android:textSize="20dp"
+            android:clickable="true"
+            android:id="@+id/credit_card"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:id="@+id/layout_credit_card">
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:ems="10"
+                android:maxLength="16"
+                android:hint="Card Number"
+                android:id="@+id/card_number"
+                />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:ems="5"
+                android:maxLength="3"
+                android:hint="cvv"
+                android:id="@+id/cvv_credit"
+                android:layout_alignTop="@+id/yearPicker"
+                android:layout_toRightOf="@+id/credit_name"
+                android:layout_toEndOf="@+id/credit_name" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Proceed"
+                android:background="@color/Green"
+                android:id="@+id/btn_credit_card"
+                android:layout_below="@+id/credit_name"
+                android:layout_marginTop="12dp"/>
+
+            <NumberPicker
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/monthPicker"
+                android:layout_below="@+id/card_number"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="12dp">
+                </NumberPicker>
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"
+                android:text="Name"
+                android:ems="10"
+                android:id="@+id/credit_name"
+                android:layout_below="@+id/monthPicker"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="12dp"/>
+
+            <NumberPicker
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/yearPicker"
+                android:layout_alignTop="@+id/monthPicker"
+                android:layout_toRightOf="@+id/monthPicker"
+                android:layout_toEndOf="@+id/monthPicker"
+                android:layout_marginLeft="12dp">
+            </NumberPicker>
+        </RelativeLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="10dp"
+            android:background="#ffffff"
+            />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:text="+ Debit Card"
+            android:textSize="20dp"
+            android:clickable="true"
+            android:layout_marginTop="10dp"
+            android:id="@+id/debit_card"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:id="@+id/layout_debit_card">
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:ems="10"
+                android:id="@+id/debit_number"
+                android:maxLength="16"
+                android:hint="Card Number"
+                />
+            <NumberPicker
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/debit_monthPicker"
+                android:layout_below="@+id/debit_number"
+                android:layout_marginLeft="12dp">
+            </NumberPicker>
+
+            <NumberPicker
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/debit_YearPicker"
+                android:layout_alignBottom="@+id/debit_monthPicker"
+                android:layout_toEndOf="@+id/debit_monthPicker"
+                android:layout_marginLeft="10dp">
+             </NumberPicker>
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:ems="5"
+                android:hint="cvv"
+                android:maxLength="3"
+                android:id="@+id/cvv_debit"
+                android:layout_marginLeft="37dp"
+                android:layout_marginStart="37dp"
+                android:layout_below="@+id/debit_number"
+                android:layout_toRightOf="@+id/debit_YearPicker"
+                android:layout_toEndOf="@+id/debit_YearPicker" />
+
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Name"
+                android:inputType="textPersonName"
+                android:id="@+id/debit_name"
+                android:layout_below="@+id/debit_monthPicker"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Proceed"
+                android:background="@color/Green"
+                android:id="@+id/btn_debit_card"
+                android:layout_below="@+id/debit_name"
+                 />
+        </RelativeLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#ffffff"
+            />
+        </LinearLayout>
+    </RelativeLayout>
+</ScrollView>
+<!-- From: file:/C:/Users/pulla/AndroidProjects/MyQueue/app/src/main/res/layout/activity_payment.xml -->

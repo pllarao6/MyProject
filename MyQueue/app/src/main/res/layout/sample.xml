@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#ffffff"
+    >
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="45dp"
+        android:id="@+id/top_view"
+        android:layout_alignParentTop="true">
+
+        <TextView
+            android:id="@+id/item_text"
+            android:layout_alignParentLeft="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Items"
+            android:textColor="#474747"
+            android:textSize="14dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginLeft="10dp"/>
+
+        <TextView
+            android:id="@+id/item_count"
+            android:layout_toRightOf="@+id/item_text"
+            android:layout_alignParentTop="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="(0)"
+            android:textColor="#474747"
+            android:textSize="14dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginLeft="5dp"/>
+
+
+        <TextView
+            android:id="@+id/total_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Total Amount Rs. 5700"
+            android:textColor="#000000"
+            android:textSize="20dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignLeft="@+id/item_text"
+            android:layout_alignStart="@+id/item_text"
+            />
+        <View
+            android:id="@+id/view1"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentLeft="true"
+            android:layout_marginTop="5dp"
+            android:background="#BABABA"
+            android:layout_below="@+id/total_amount"/>
+    </RelativeLayout>
+
+    <ListView android:id="@+id/ListView01"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
+    </ListView>
+
+    <FrameLayout android:id="@+id/FrameLayout01"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+        <Button android:id="@+id/Button01"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="button">
+        </Button>
+    </FrameLayout>
+
+</LinearLayout>

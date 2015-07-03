@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="pullaapps.example.com.myqueue"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="11"
+        android:targetSdkVersion="21" />
+
+    <permission
+        android:name="pullaapps.example.com.myqueue"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="com.javapapers.android.permission.C2D_MESSAGE" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name="pullaapps.example.com.myqueue.LoginActivity"
+            android:label="@string/app_name" >
+        </activity>
+        <activity
+            android:name="pullaapps.example.com.myqueue.SignUp"
+            android:label="@string/title_activity_sign_up" >
+        </activity>
+        <activity
+            android:name="pullaapps.example.com.myqueue.Store"
+            android:label="Store" >
+        </activity>
+        <activity
+            android:name="pullaapps.example.com.myqueue.BaseActivity"
+            android:label="MainActivity" >
+        </activity>
+        <activity
+            android:name="pullaapps.example.com.myqueue.LaunchActivity"
+            android:label="@string/title_activity_launch"
+            android:theme="@android:style/Theme.NoTitleBar" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="pullaapps.example.com.myqueue.DisplayProducts"
+            android:label="@string/title_activity_display_products"
+            android:launchMode="singleTask"
+            android:parentActivityName="pullaapps.example.com.myqueue.Store"
+            android:windowSoftInputMode="stateHidden" >
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Store" />
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" >
+            </meta-data>
+        </activity>
+        <activity
+            android:name="pullaapps.example.com.myqueue.Profile"
+            android:label="@string/title_activity_profile" >
+        </activity>
+        <activity
+            android:name="pullaapps.example.com.myqueue.MyCart"
+            android:label="My Cart"
+            android:parentActivityName="pullaapps.example.com.myqueue.DisplayProducts" >
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".DisplayProducts" />
+        </activity>
+        <activity
+            android:name="pullaapps.example.com.myqueue.DisplayItem"
+            android:label="Display Item"
+            android:parentActivityName="pullaapps.example.com.myqueue.DisplayProducts" >
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".DisplayProducts" />
+        </activity>
+        <activity
+            android:name="pullaapps.example.com.myqueue.CheckOut"
+            android:label="@string/title_activity_check_out"
+            android:parentActivityName="pullaapps.example.com.myqueue.MyCart" >
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MyCart" />
+        </activity>
+        <activity
+            android:name="pullaapps.example.com.myqueue.Payment"
+            android:label="@string/title_activity_payment" >
+        </activity>
+        <activity
+            android:name="pullaapps.example.com.myqueue.Bill"
+            android:label="@string/title_activity_bill" >
+        </activity>
+        <activity
+            android:name="pullaapps.example.com.myqueue.MyOrders"
+            android:label="@string/title_activity_my_orders" >
+        </activity>
+
+        <receiver
+            android:name="pullaapps.example.com.myqueue.GcmBroadcastReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+
+                <category android:name="pullaapps.example.com.myqueue" />
+            </intent-filter>
+        </receiver>
+
+        <service android:name="pullaapps.example.com.myqueue.GCMNotificationIntentService" />
+
+        <activity
+            android:name="pullaapps.example.com.myqueue.DisplayOrder"
+            android:label="@string/title_activity_display_order"
+            android:parentActivityName="pullaapps.example.com.myqueue.MyOrders" >
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MyOrders" />
+        </activity>
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+    </application>
+
+</manifest>

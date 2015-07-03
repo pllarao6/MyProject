@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">MyQueue</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_signout">Signout</string>
+    <string name="action_update">Edit Profile</string>
+    <string name="action_settings">Settings1</string>
+    <string name="title_activity_sign_up">SignUp</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_launch">LaunchActivity</string>
+    <string name="title_activity_display_products">DisplayProducts</string>
+
+    <string-array name="nav_options">
+        <item>Profile</item>
+         <item>Order Now</item>
+         <item>My Orders</item>
+        <item>Signout</item>
+    </string-array>
+
+    <array name="navigation_icons">
+        <item>@drawable/ic_action_user</item>
+        <item>@drawable/ic_shopping</item>
+        <item>@drawable/ic_shopping</item>
+        <item>@drawable/signout</item>
+    </array>
+
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+    <string name="title_activity_profile">Profile</string>
+    <string name="title_activity_dumps">dumps</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_check_out">CheckOut</string>
+    <string name="title_activity_payment">Payment</string>
+    <string name="title_activity_bill">Bill</string>
+    <string name="title_activity_my_orders">MyOrders</string>
+    <string name="title_activity_display_order">DisplayOrder</string>
+
+    <array name="images1_array">
+        <item>http://myproject.byethost8.com/images/dominos.png</item>
+        <item>http://myproject.byethost8.com/images/kfc.png</item>
+        <item>http://myproject.byethost8.com/images/pizzahut.png</item>
+        <item>http://myproject.byethost8.com/images/subway.png</item>
+        <item>http://myproject.byethost8.com/images/faasos.jpg</item>
+        <item>http://myproject.byethost8.com/images/mcdonalds.png</item>
+        <item>http://myproject.byethost8.com/images/mcdonalds.png</item>
+    </array>
+
+    <array name="images_array">
+        <item>http://lh5.ggpht.com/_hepKlJWopDg/TB-_WXikaYI/AAAAAAAAElI/715k4NvBM4w/s144-c/IMG_0075.JPG</item>
+        <item>http://lh4.ggpht.com/_4f1e_yo-zMQ/TCe5h9yN-TI/AAAAAAAAXqs/8X2fIjtKjmw/s144-c/IMG_1786.JPG</item>
+        <item>http://lh3.ggpht.com/_GEnSvSHk4iE/TDSfmyCfn0I/AAAAAAAAF8Y/cqmhEoxbwys/s144-c/_MG_3675.jpg</item>
+        <item>http://lh6.ggpht.com/_ZN5zQnkI67I/TCFFZaJHDnI/AAAAAAAABVk/YoUbDQHJRdo/s144-c/P9250508.JPG</item>
+        <item>http://lh4.ggpht.com/_XjNwVI0kmW8/TCOwNtzGheI/AAAAAAAAC84/SxFJhG7Scgo/s144-c/0014.jpg</item>
+        <item>http://lh6.ggpht.com/_Nsxc889y6hY/TBp7jfx-cgI/AAAAAAAAHAg/Rr7jX44r2Gc/s144-c/IMGP9775a.jpg</item>
+        <item>http://lh6.ggpht.com/_ZN5zQnkI67I/TCFFZaJHDnI/AAAAAAAABVk/YoUbDQHJRdo/s144-c/P9250508.JPG</item>
+    </array>
+    <string name="title_activity_search">SearchActivity</string>
+</resources>
