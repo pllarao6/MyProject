@@ -1,4 +1,4 @@
-package pullaapps.example.com.myqueue;
+package pullaapps.example.com.myqueue.network;
 
 /**
  * Created by vankayap on 3/10/2015.

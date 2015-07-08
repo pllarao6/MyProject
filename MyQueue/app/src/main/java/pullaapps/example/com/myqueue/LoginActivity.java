@@ -17,14 +17,11 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.IOException;
-import java.util.ArrayList;
+import pullaapps.example.com.myqueue.network.ConnectionDetector;
+import pullaapps.example.com.myqueue.network.HttpConnector;
 
 
 public class LoginActivity extends Activity {
@@ -35,16 +32,16 @@ public class LoginActivity extends Activity {
     String returnString,result;
     //StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
     SessionManager sessionManager;
-    String userid;
+    private String userid;
+    private String username;
     String regId;
     GoogleCloudMessaging gcm;
-    Context context;
-    public static final String REG_ID = "regId";
+    private Context context;
+    private static final String REG_ID = "regId";
     private static final String APP_VERSION = "appVersion";
-    ArrayList<NameValuePair> postParameters;
-    String mail;
+    private String mail;
     private String password;
-
+    private static final String dataURL="http://myproject.byethost8.com/checkUser.php";
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
@@ -73,10 +70,6 @@ public class LoginActivity extends Activity {
                Boolean isInternetPresent = cd.isConnectingToInternet(); // true or false
                if(isInternetPresent) {
                    if (mail.trim().length() > 0 && password.trim().length() > 0) {
-                       //Toast.makeText(getApplicationContext(), "In Http execution",Toast.LENGTH_SHORT).show();
-                       postParameters = new ArrayList<NameValuePair>();
-                       postParameters.add(new BasicNameValuePair("KEY_EMAIL", mail));
-                       postParameters.add(new BasicNameValuePair("KEY_PASSWORD", password));
                        registerGCM();
                    } else {
                        Toast.makeText(getApplicationContext(), "Login failed.." + "Please enter username and password", Toast.LENGTH_LONG).show();
@@ -102,7 +95,6 @@ public class LoginActivity extends Activity {
                     "registerGCM - successfully registered with GCM server - regId: "
                             + regId);
         }
-
         else
         {
             loginInBackground();
@@ -111,7 +103,7 @@ public class LoginActivity extends Activity {
 
     private String getRegistrationId(Context context) {
         final SharedPreferences prefs = getSharedPreferences(
-                SignUp.class.getSimpleName(), Context.MODE_PRIVATE);
+                "MyQueueSharedPreference", Context.MODE_PRIVATE);
         String registrationId = prefs.getString(REG_ID, "");
         if (registrationId.isEmpty()) {
             Log.i("TAG", "Registration not found.");
@@ -170,7 +162,7 @@ public class LoginActivity extends Activity {
 
     private void storeRegistrationId(Context context, String regId) {
         final SharedPreferences prefs = getSharedPreferences(
-                SignUp.class.getSimpleName(), Context.MODE_PRIVATE);
+                "MyQueueSharedPreference", Context.MODE_PRIVATE);
         int appVersion = getAppVersion(context);
         Log.i("TAG", "Saving regId on app version " + appVersion);
         SharedPreferences.Editor editor = prefs.edit();
@@ -183,6 +175,9 @@ public class LoginActivity extends Activity {
         new AsyncTask<String, Void, String>() {
 
        private ProgressDialog dialog;
+       private JSONObject toSend;
+       private HttpConnector httpConnector;
+       private String result;
        protected void onPreExecute()
        {
            dialog = new ProgressDialog(LoginActivity.this);
@@ -191,13 +186,22 @@ public class LoginActivity extends Activity {
        }
 
        protected String doInBackground(String... params) {
-           postParameters.add(new BasicNameValuePair("KEY_REGID", regId));
-           //Toast.makeText(context,mail+password,Toast.LENGTH_SHORT).show();
-           try {
-               result = CustomHttpClient.executeHttpPost("http://myproject.byethost8.com/select.php", postParameters);
-               //Toast.makeText(getApplicationContext(), "After Http execution "+result,Toast.LENGTH_SHORT).show();
-           } catch (Exception e) {
-               Log.e("log_tag", "Error in http connection!!" + e.toString());
+           try
+           {
+               toSend=new JSONObject();
+               toSend.put("KEY_EMAIL",mail);
+               toSend.put("KEY_PASSWORD",password);
+               toSend.put("KEY_REGID",regId);
+               httpConnector=new HttpConnector(toSend,dataURL,"POST");
+               int res=httpConnector.makeConnection();
+               if(res==1)
+               {
+                   result=httpConnector.convertInputStream();
+                   Log.i("response",result);
+               }
+           }catch (Exception e)
+           {
+                e.printStackTrace();
            }
            return result;
        }
@@ -207,19 +211,19 @@ public class LoginActivity extends Activity {
                dialog.dismiss();
            }
            try {
+               Log.i("response",result);
                returnString = "";
                JSONObject jObject = new JSONObject(result);
                Log.i("Log Tag", "Result:" + jObject.getString("re"));
                Log.i("Log Tag", "Result :" + jObject.getInt("id"));
                returnString += jObject.getString("re");
                userid = String.valueOf(jObject.getInt("id"));
-               //Toast.makeText(getApplicationContext(), returnString, Toast.LENGTH_LONG).show();
-               //Get an output to the screen
+               username=jObject.getString("name");
            } catch (JSONException e) {
                Log.e("log_tag", "Error parsing data " + e.toString());
            }
            if (returnString.equals("ok")) {
-               session.createLoginSession("User", mail, password, userid);
+               session.createLoginSession(username, mail, password, userid);
                Intent intent = new Intent(getApplicationContext(), Store.class);
                startActivity(intent);
                finish();
