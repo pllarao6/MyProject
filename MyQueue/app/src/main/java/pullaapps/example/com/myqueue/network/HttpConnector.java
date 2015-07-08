@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import javax.net.ssl.HttpsURLConnection;
 
 /**
  * Created by Prathyusha on 3/7/2015.
@@ -38,6 +39,8 @@ public class HttpConnector {
         this.userid=userid;
         this.resource=resource;
         this.method=method;
+        httpURLConnection=null;
+        inputStream = null;
     }
 
     public int makeConnection() {
@@ -56,11 +59,11 @@ public class HttpConnector {
         try{
         URL url=new URL(resource);
         httpURLConnection=(HttpURLConnection)url.openConnection();
-        httpURLConnection.setRequestProperty("Content-Type","application/json");
-        httpURLConnection.setRequestProperty("Accept","application/json");
+        httpURLConnection.setRequestProperty("Content-Type",
+                    "application/x-www-form-urlencoded");
         httpURLConnection.setRequestMethod("POST");
         httpURLConnection.setDoOutput(true);
-        String param="json"+toSend.toString();
+        String param="json="+toSend.toString();
         httpURLConnection.setFixedLengthStreamingMode(param.getBytes().length);
         PrintWriter out=new PrintWriter(httpURLConnection.getOutputStream());
         out.write(param);
@@ -83,12 +86,13 @@ public class HttpConnector {
         try{
             resource=resource+"?UserId="+userid;
             URL url=new URL(resource);
-            httpURLConnection=(HttpURLConnection)url.openConnection();
+            httpURLConnection=(HttpsURLConnection)url.openConnection();
             httpURLConnection.setRequestProperty("Content-Type","application/json");
             httpURLConnection.setRequestProperty("Accept","application/json");
             httpURLConnection.setRequestMethod("GET");
             if(httpURLConnection.getResponseCode()==200)
             {
+                Log.e("in","response");
                 flag=1;
                 inputStream=new BufferedInputStream(httpURLConnection.getInputStream());
             }
@@ -109,7 +113,6 @@ public String convertInputStream() throws IOException
         while((line=bufferedReader.readLine())!=null)
         {
         result+=line;
-        Log.d("num", "1");
         }
         }
         if (inputStream!=null)
