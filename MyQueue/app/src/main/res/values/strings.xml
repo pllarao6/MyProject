@@ -10,6 +10,7 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_launch">LaunchActivity</string>
     <string name="title_activity_display_products">DisplayProducts</string>
+    <string name="mysharedpreference">AppSharedPreferences</string>
 
     <string-array name="nav_options">
         <item>Profile</item>

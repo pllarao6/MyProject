@@ -28,20 +28,20 @@ public class LoginActivity extends Activity {
 
     private Button btnSignup,btnLogin;
     private EditText txtEmail,txtPassword;
-    SessionManager session;
-    String returnString,result;
+    private SessionManager session;
+    private String returnString,result;
     //StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
     SessionManager sessionManager;
     private String userid;
     private String username;
     String regId;
-    GoogleCloudMessaging gcm;
+    private GoogleCloudMessaging gcm;
     private Context context;
     private static final String REG_ID = "regId";
     private static final String APP_VERSION = "appVersion";
     private String mail;
     private String password;
-    private static final String dataURL="http://myproject.byethost8.com/checkUser.php";
+    private static final String dataURL="http://myproject.byethost8.com/login_user.php";
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
@@ -103,7 +103,7 @@ public class LoginActivity extends Activity {
 
     private String getRegistrationId(Context context) {
         final SharedPreferences prefs = getSharedPreferences(
-                "MyQueueSharedPreference", Context.MODE_PRIVATE);
+                getResources().getString(R.string.mysharedpreference), Context.MODE_PRIVATE);
         String registrationId = prefs.getString(REG_ID, "");
         if (registrationId.isEmpty()) {
             Log.i("TAG", "Registration not found.");
@@ -162,7 +162,7 @@ public class LoginActivity extends Activity {
 
     private void storeRegistrationId(Context context, String regId) {
         final SharedPreferences prefs = getSharedPreferences(
-                "MyQueueSharedPreference", Context.MODE_PRIVATE);
+                getResources().getString(R.string.mysharedpreference), Context.MODE_PRIVATE);
         int appVersion = getAppVersion(context);
         Log.i("TAG", "Saving regId on app version " + appVersion);
         SharedPreferences.Editor editor = prefs.edit();
@@ -192,7 +192,7 @@ public class LoginActivity extends Activity {
                toSend.put("KEY_EMAIL",mail);
                toSend.put("KEY_PASSWORD",password);
                toSend.put("KEY_REGID",regId);
-               httpConnector=new HttpConnector(toSend,dataURL,"POST");
+               httpConnector=new HttpConnector(toSend,dataURL,"POST",getApplicationContext());
                int res=httpConnector.makeConnection();
                if(res==1)
                {

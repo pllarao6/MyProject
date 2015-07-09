@@ -9,7 +9,9 @@ import java.util.HashMap;
 /**
  * Created by vankayap on 3/5/2015.
  */
+
 public class SessionManager {
+
     SharedPreferences pref;
 
     // Editor for Shared preferences
@@ -22,15 +24,13 @@ public class SessionManager {
     int PRIVATE_MODE = 0;
 
     // Sharedpref file name
-    private static final String PREF_NAME = "MyQueueSharedPreference";
+    private static final String PREF_NAME = "AppSharedPreferences";
 
     // All Shared Preferences Keys
     private static final String IS_LOGIN = "IsLoggedIn";
 
-    // User name (make variable public to access from outside)
     public static final String KEY_NAME = "name";
 
-    // Email address (make variable public to access from outside)
     public static final String KEY_EMAIL = "email";
 
     public static final String KEY_PASSWORD= "password";
@@ -44,6 +44,7 @@ public class SessionManager {
     public static final String KEY_MERCHANTID="merchant_id";
 
     public static final String KEY_USERID="userid";
+
     // Constructor
     public SessionManager(Context context){
         this._context = context;
@@ -86,6 +87,7 @@ public class SessionManager {
         if(!this.isLoggedIn()){
             // user is not logged in redirect him to Login Activity
             Intent i = new Intent(_context, LoginActivity.class);
+
             // Closing all the Activities
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
