@@ -37,13 +37,14 @@ public class HttpConnector {
         this.context=context;
     }
 
-    public HttpConnector(int userid,String resource,String method)
+    public HttpConnector(int userid,String resource,String method,Context context)
     {
         this.userid=userid;
         this.resource=resource;
         this.method=method;
         httpURLConnection=null;
         inputStream = null;
+        this.context=context;
     }
 
     public int makeConnection() {
@@ -89,25 +90,30 @@ public class HttpConnector {
         return flag;
         }
 
-    public int httpGet()
-    {
-        int flag=0;
-        try{
-            resource=resource+"?UserId="+userid;
-            URL url=new URL(resource);
-            httpURLConnection=(HttpsURLConnection)url.openConnection();
-            httpURLConnection.setRequestProperty("Content-Type","application/json");
-            httpURLConnection.setRequestProperty("Accept","application/json");
-            httpURLConnection.setRequestMethod("GET");
-            if(httpURLConnection.getResponseCode()==200)
-            {
-                Log.e("in","response");
-                flag=1;
-                inputStream=new BufferedInputStream(httpURLConnection.getInputStream());
+    public int httpGet() {
+        int flag = 0;
+        ConnectionDetector connectionDetector = new ConnectionDetector(context);
+        Boolean isInternetPresent = connectionDetector.isConnectingToInternet();
+        if (isInternetPresent) {
+            try {
+                resource = resource + "?UserId=" + userid;
+                URL url = new URL(resource);
+                httpURLConnection = (HttpURLConnection) url.openConnection();
+                httpURLConnection.setRequestProperty("Content-Type", "application/json");
+                httpURLConnection.setRequestProperty("Accept", "application/json");
+                httpURLConnection.setRequestMethod("GET");
+                if (httpURLConnection.getResponseCode() == 200) {
+                    Log.e("in", "response");
+                    flag = 1;
+                    inputStream = new BufferedInputStream(httpURLConnection.getInputStream());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        }catch (Exception e)
+        }
+        else
         {
-            e.printStackTrace();
+            flag=2;
         }
         return flag;
     }

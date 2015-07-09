@@ -2059,21 +2059,22 @@ containing a value of this type.
         public static final int drawer_open=0x7f0d0035;
         public static final int hello_blank_fragment=0x7f0d0036;
         public static final int hello_world=0x7f0d0037;
-        public static final int store_picture_message=0x7f0d0038;
-        public static final int store_picture_title=0x7f0d0039;
-        public static final int title_activity_bill=0x7f0d003a;
-        public static final int title_activity_check_out=0x7f0d003b;
-        public static final int title_activity_display_order=0x7f0d003c;
-        public static final int title_activity_display_products=0x7f0d003d;
-        public static final int title_activity_dumps=0x7f0d003e;
-        public static final int title_activity_launch=0x7f0d003f;
-        public static final int title_activity_main=0x7f0d0040;
-        public static final int title_activity_my_orders=0x7f0d0041;
-        public static final int title_activity_payment=0x7f0d0042;
-        public static final int title_activity_profile=0x7f0d0043;
-        public static final int title_activity_search=0x7f0d0044;
-        public static final int title_activity_sign_up=0x7f0d0045;
-        public static final int wallet_buy_button_place_holder=0x7f0d0046;
+        public static final int mysharedpreference=0x7f0d0038;
+        public static final int store_picture_message=0x7f0d0039;
+        public static final int store_picture_title=0x7f0d003a;
+        public static final int title_activity_bill=0x7f0d003b;
+        public static final int title_activity_check_out=0x7f0d003c;
+        public static final int title_activity_display_order=0x7f0d003d;
+        public static final int title_activity_display_products=0x7f0d003e;
+        public static final int title_activity_dumps=0x7f0d003f;
+        public static final int title_activity_launch=0x7f0d0040;
+        public static final int title_activity_main=0x7f0d0041;
+        public static final int title_activity_my_orders=0x7f0d0042;
+        public static final int title_activity_payment=0x7f0d0043;
+        public static final int title_activity_profile=0x7f0d0044;
+        public static final int title_activity_search=0x7f0d0045;
+        public static final int title_activity_sign_up=0x7f0d0046;
+        public static final int wallet_buy_button_place_holder=0x7f0d0047;
     }
     public static final class style {
         public static final int AppTheme=0x7f0e0000;

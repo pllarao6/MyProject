@@ -263,6 +263,7 @@ public class SignUp extends Activity {
                 Toast.makeText(getApplicationContext(), "Success.Welcome to our family", Toast.LENGTH_LONG).show();
                 Intent i=new Intent(context,LoginActivity.class);
                 startActivity(i);
+                finish();
             } else if (returnString.equals("Record is repeated")) {
                 Toast.makeText(getApplicationContext(), "Account Already Exists", Toast.LENGTH_LONG).show();
             }
