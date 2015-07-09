@@ -1,5 +1,6 @@
 package pullaapps.example.com.myqueue.network;
 
+import android.content.Context;
 import android.util.Log;
 
 import org.json.JSONObject;
@@ -25,13 +26,15 @@ public class HttpConnector {
     public InputStream inputStream;
     public String method;
     public int userid;
+    public Context context;
 
-    public HttpConnector(JSONObject toSend, String resource, String method) {
+    public HttpConnector(JSONObject toSend, String resource, String method,Context context) {
         this.toSend = toSend;
         this.resource = resource;
         this.method = method;
         httpURLConnection = null;
         inputStream = null;
+        this.context=context;
     }
 
     public HttpConnector(int userid,String resource,String method)
@@ -56,27 +59,33 @@ public class HttpConnector {
     public int httpPost()
     {
         int flag=0;
-        try{
-        URL url=new URL(resource);
-        httpURLConnection=(HttpURLConnection)url.openConnection();
-        httpURLConnection.setRequestProperty("Content-Type",
-                    "application/x-www-form-urlencoded");
-        httpURLConnection.setRequestMethod("POST");
-        httpURLConnection.setDoOutput(true);
-        String param="json="+toSend.toString();
-        httpURLConnection.setFixedLengthStreamingMode(param.getBytes().length);
-        PrintWriter out=new PrintWriter(httpURLConnection.getOutputStream());
-        out.write(param);
-        out.close();
-        if(httpURLConnection.getResponseCode()==200)
-        {
-        flag=1;
-        inputStream=new BufferedInputStream(httpURLConnection.getInputStream());
+        ConnectionDetector connectionDetector=new ConnectionDetector(context);
+        Boolean isInternetPresent=connectionDetector.isConnectingToInternet();
+        if(isInternetPresent) {
+            try {
+                URL url = new URL(resource);
+                httpURLConnection = (HttpURLConnection) url.openConnection();
+                httpURLConnection.setRequestProperty("Content-Type",
+                        "application/x-www-form-urlencoded");
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setDoOutput(true);
+                String param = "json=" + toSend.toString();
+                httpURLConnection.setFixedLengthStreamingMode(param.getBytes().length);
+                PrintWriter out = new PrintWriter(httpURLConnection.getOutputStream());
+                out.write(param);
+                out.close();
+                if (httpURLConnection.getResponseCode() == 200) {
+                    flag = 1;
+                    inputStream = new BufferedInputStream(httpURLConnection.getInputStream());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
-        }catch (Exception e)
-        {
-        e.printStackTrace();
-        }
+            else
+            {
+                flag=2;
+            }
         return flag;
         }
 
