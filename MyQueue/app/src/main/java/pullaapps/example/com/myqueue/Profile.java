@@ -2,6 +2,8 @@ package pullaapps.example.com.myqueue;
 
 import pullaapps.example.com.myqueue.network.*;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,13 +20,14 @@ import java.io.InputStream;
 
 public class Profile extends BaseActivity  {
 
-    public View inflatedView;
+    private View inflatedView;
     private static final String USER_URL="http://myproject.byethost8.com/getUserData.php";
     private TextView mName;
     private TextView mEmail;
     private TextView mMobile;
     private SessionManager sessionManager;
     private String userid;
+    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +37,7 @@ public class Profile extends BaseActivity  {
         flag1=1;
         flag2=0;
         flag3=0;
+        context=getApplicationContext();
         sessionManager=new SessionManager(this);
         userid=sessionManager.getUserId();
         mName=(TextView)findViewById(R.id.name);
@@ -82,43 +86,46 @@ public class Profile extends BaseActivity  {
 
     class CustomAsyncTask extends AsyncTask<String,Void,Integer>
     {
-        HttpConnector httpConnector;
-        String response;
+        private HttpConnector httpConnector;
+        private String response;
+        private ProgressDialog pDialog;
         @Override
         protected void onPreExecute()
         {
-
-
+            pDialog=new ProgressDialog(Profile.this);
+            pDialog.setMessage("Retrieving Profile Data");
+            pDialog.show();
         }
 
         @Override
         protected Integer doInBackground(String... params) {
-            int flag=0;
-            try
-            {
+                int flag=0;
                 Log.i("userid",userid);
-                httpConnector=new HttpConnector(Integer.parseInt(userid),params[0],"GET");
+                httpConnector=new HttpConnector(Integer.parseInt(userid),params[0],"GET",context);
                 flag=httpConnector.makeConnection();
-                if(flag==1)
-                {
-                        response=httpConnector.convertInputStream();
-                }
-            }catch (Exception e)
-            {
-                e.printStackTrace();
-            }
-            return flag;
+           return flag;
         }
 
         @Override
         protected void onPostExecute(Integer res)
         {
-            httpConnector.close();
+            if(pDialog.isShowing())
+                pDialog.dismiss();
             if(res==1)
             {
-                parseResult(response);
+                try {
+                    response = httpConnector.convertInputStream();
+                    parseResult(response);
+                }catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
             }
-            else {
+            else if(res==2)
+            {
+                Toast.makeText(getApplicationContext(),"No Internet Connection..Try Again",Toast.LENGTH_SHORT).show();
+            }
+            else if(res==0){
                 Toast.makeText(getApplicationContext(),"Failed to update Data",Toast.LENGTH_SHORT).show();
             }
         }
@@ -127,7 +134,7 @@ public class Profile extends BaseActivity  {
     private void parseResult(String response)
     {
         JSONObject jsonObject;
-        Log.i("taggy",response);
+        Log.i("response",response);
         try
         {
             jsonObject=new JSONObject(response);
