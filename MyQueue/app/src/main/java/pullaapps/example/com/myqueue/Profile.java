@@ -101,25 +101,29 @@ public class Profile extends BaseActivity  {
         protected Integer doInBackground(String... params) {
                 int flag=0;
                 Log.i("userid",userid);
-                httpConnector=new HttpConnector(Integer.parseInt(userid),params[0],"GET",context);
-                flag=httpConnector.makeConnection();
+                try {
+                    httpConnector = new HttpConnector(Integer.parseInt(userid), params[0], "GET", context);
+                    flag = httpConnector.makeConnection();
+                    if(flag==1) {
+                        response = httpConnector.convertInputStream();
+                    }
+                }catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
            return flag;
         }
 
         @Override
         protected void onPostExecute(Integer res)
         {
+            if(httpConnector!=null)
+                httpConnector.close();
             if(pDialog.isShowing())
                 pDialog.dismiss();
             if(res==1)
             {
-                try {
-                    response = httpConnector.convertInputStream();
                     parseResult(response);
-                }catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
             }
             else if(res==2)
             {

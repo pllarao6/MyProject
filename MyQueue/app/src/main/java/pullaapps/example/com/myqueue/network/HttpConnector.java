@@ -71,11 +71,13 @@ public class HttpConnector {
                 httpURLConnection.setRequestMethod("POST");
                 httpURLConnection.setDoOutput(true);
                 String param = "json=" + toSend.toString();
+                Log.d("params",param);
                 httpURLConnection.setFixedLengthStreamingMode(param.getBytes().length);
                 PrintWriter out = new PrintWriter(httpURLConnection.getOutputStream());
                 out.write(param);
                 out.close();
                 if (httpURLConnection.getResponseCode() == 200) {
+                    Log.e("inrepsonse","response");
                     flag = 1;
                     inputStream = new BufferedInputStream(httpURLConnection.getInputStream());
                 }
@@ -135,8 +137,13 @@ public String convertInputStream() throws IOException
         return result;
         }
 
+    public InputStream getInputStream()
+    {
+        return inputStream;
+    }
 public void close()
   {
       httpURLConnection.disconnect();
   }
+
 }

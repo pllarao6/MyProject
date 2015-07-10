@@ -1,5 +1,6 @@
 package pullaapps.example.com.myqueue;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.location.Location;
@@ -45,6 +46,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import pullaapps.example.com.myqueue.network.ConnectionDetector;
+import pullaapps.example.com.myqueue.network.HttpConnector;
 
 
 public class Store extends BaseActivity implements ConnectionCallbacks,
@@ -87,29 +89,28 @@ public class Store extends BaseActivity implements ConnectionCallbacks,
     Bundle bundle;
     private SessionManager sessionManager;
     private String imageURL="http://myproject.byethost8.com/images/";
-	
+    private Context context;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);		
-        inflatedView=getLayoutInflater().inflate(R.layout.activity_store, frameLayout);        
-		sessionManager=new SessionManager(this);
+        super.onCreate(savedInstanceState);
+        inflatedView=getLayoutInflater().inflate(R.layout.activity_store, frameLayout);
+        sessionManager=new SessionManager(getApplicationContext());
         setTitle(titles[1]);
         flag2=1;
         flag1=0;
         flag3=0;
-        session = new SessionManager(getApplicationContext());
-        session.checkLogin();
-        if (!session.isLoggedIn()) {
-            finish();
+        context=getApplicationContext();
+        sessionManager.checkLogin();
+        if (!sessionManager.isLoggedIn()) {
+         finish();
         }
         rl = (RelativeLayout)findViewById(R.id.rl);
-        HashMap<String,String> user=session.getUserDetails();
-        String name = user.get(SessionManager.KEY_NAME);
-        // email
-        String email = user.get(SessionManager.KEY_EMAIL);
-
+        spinnerValues = new ArrayList<String>();
+        spinnerSubs=new ArrayList<String>();
+        MerchantId=new ArrayList<Integer>();
+        StoreItms = new ArrayList<StoreDrawerItem>();
         LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
-
         /*if(!lm.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
                 !lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
             // Build the alert dialog
@@ -129,7 +130,7 @@ public class Store extends BaseActivity implements ConnectionCallbacks,
         }*/
 
         if (checkPlayServices()) {
-            Log.d("Tag","In CheckPlayServices Condition");
+            Log.d(TAG,"In CheckPlayServices Condition");
             buildGoogleApiClient();
             createLocationRequest();
         }
@@ -137,9 +138,9 @@ public class Store extends BaseActivity implements ConnectionCallbacks,
 
     protected void onStart() {
         super.onStart();
-        Log.d("Tag","in Start");
+        Log.d(TAG,"In Start");
         if(mGoogleApiClient!=null)
-		    mGoogleApiClient.connect();
+            mGoogleApiClient.connect();
         pd = new TransparentProgressDialog(this, R.drawable.spinner,"Retrieving Stores");
         if(!pd.isShowing())
             pd.show();
@@ -149,7 +150,8 @@ public class Store extends BaseActivity implements ConnectionCallbacks,
         super.onResume();
         Log.d("Tag","In Resume");
         checkPlayServices();
-		//startLocationUpdates();
+        if(mGoogleApiClient.isConnected())
+            startLocationUpdates();
     }
 
     protected void onPause() {
@@ -157,7 +159,7 @@ public class Store extends BaseActivity implements ConnectionCallbacks,
         Log.d("Tag","In Pause");
         if (pd.isShowing())
             pd.dismiss();
-        //stopLocationUpdates();
+        stopLocationUpdates();
     }
 
 
@@ -175,12 +177,12 @@ public class Store extends BaseActivity implements ConnectionCallbacks,
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API).build();
-        Log.d("Tag","In buildGoogleApiCLient");
+        Log.d(TAG,"In buildGoogleApiClient");
     }
 
 
     protected void createLocationRequest() {
-        Log.d("Tag","In createRequest");
+        Log.d(TAG,"In createRequest");
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(UPDATE_INTERVAL);
         mLocationRequest.setFastestInterval(FATEST_INTERVAL);
@@ -210,9 +212,9 @@ public class Store extends BaseActivity implements ConnectionCallbacks,
 
     protected void startLocationUpdates()
     {
-        Log.d("Tag","In StartLocationUpdates");
+        Log.d(TAG,"In StartLocationUpdates");
         LocationServices.FusedLocationApi.requestLocationUpdates(
-                mGoogleApiClient, mLocationRequest,this);
+                mGoogleApiClient, mLocationRequest, this);
 
     }
 
@@ -250,9 +252,7 @@ public class Store extends BaseActivity implements ConnectionCallbacks,
         //Toast.makeText(getApplicationContext(),"In Connected",Toast.LENGTH_SHORT).show();
         if(mGoogleApiClient.isConnected()) {
             Log.d("Tag","in onConnected");
-            //startLocationUpdates();
-            Location location=LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-            onLocation(location);
+            startLocationUpdates();
         }
     }
 
@@ -270,36 +270,17 @@ public class Store extends BaseActivity implements ConnectionCallbacks,
             LatLng latLng = new LatLng(mLatitude, mLongitude);
             latitude = String.valueOf(mLatitude);
             longitude = String.valueOf(mLongitude);
-            Log.d("Tag","lat"+latitude+", lon"+longitude);
+            Log.d(TAG,"lat"+latitude+", lon"+longitude);
             //Toast.makeText(getApplicationContext(), "Store at" + latitude+" , "+ longitude ,Toast.LENGTH_LONG).show();
             if (latitude != null && longitude != null) {
                 Date currentDate = new Date(location.getTime());
                 Toast.makeText(getApplicationContext(), "New Time " + currentDate, Toast.LENGTH_LONG).show();
-                //stopLocationUpdates();
                 new CustomHttpRequest().execute(addressURL);
+                //stopLocationUpdates();
             }
         }
     }
 
-    public void onLocation(Location location) {
-        Log.d("Tag","in OnlocationChanged");
-        if (mGoogleApiClient.isConnected() && location != null) {
-            Log.d("Tag","InonlocationChangedCondition");
-            mLastLocation = location;
-            mLatitude = mLastLocation.getLatitude();
-            mLongitude =mLastLocation.getLongitude();
-            LatLng latLng = new LatLng(mLatitude, mLongitude);
-            latitude = String.valueOf(mLatitude);
-            longitude = String.valueOf(mLongitude);
-            Log.d("Tag","lat"+latitude+", lon"+longitude);
-            //Toast.makeText(getApplicationContext(), "Store at" + latitude+" , "+ longitude ,Toast.LENGTH_LONG).show();
-            if (latitude != null && longitude != null) {
-                Date currentDate = new Date(location.getTime());
-                Toast.makeText(getApplicationContext(), "New Time " + currentDate, Toast.LENGTH_LONG).show();
-                new CustomHttpRequest().execute(addressURL);
-            }
-        }
-    }
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
 
@@ -322,101 +303,57 @@ public class Store extends BaseActivity implements ConnectionCallbacks,
 
     class CustomHttpRequest extends AsyncTask<String, Void, Integer> {
 
-        Integer result = 0;
-        String responseString="";
-
+        private String responseString="";
+        private HttpConnector httpConnector;
+        private JSONObject toSend;
+        int flag=0;
         protected void onPreExecute() {
         }
 
         protected Integer doInBackground(String... args) {
-            InputStream inputStream;
             try {
-                /*ConnectivityManager cm =
-                        (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-
-                NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-                boolean isConnected = activeNetwork != null &&
-                        activeNetwork.isConnectedOrConnecting();*/
-                ConnectionDetector cd = new ConnectionDetector(getApplicationContext());
-                Boolean isInternetPresent = cd.isConnectingToInternet(); // true or false
-                if (isInternetPresent) {
-                    URL url = new URL(args[0]);
-                    HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-                    httpURLConnection.setDoOutput(true);
-                    httpURLConnection.setRequestMethod("POST");
-                    //httpURLConnection.setConnectTimeout(10000);
-                    String param = "KEY_LATITUDE=" + latitude + "&KEY_LONGITUDE=" + longitude;
-                    httpURLConnection.setFixedLengthStreamingMode(param.getBytes().length);
-                    PrintWriter out = new PrintWriter(httpURLConnection.getOutputStream());
-                    out.print(param);
-                    out.flush();
-                    out.close();
-                    int statusCode = httpURLConnection.getResponseCode();
-                    if (statusCode == 200) {
-                        inputStream = new BufferedInputStream(httpURLConnection.getInputStream());
-                        responseString = convertInputStreamToString(inputStream);
-                        Log.e("responseString",responseString);
-                        parseResult(responseString);
-                        result = 1;
-                    } else {
-                        result = 0;
-                    }
-                } else {
-                    if (pd.isShowing())
-                        pd.dismiss();
-                    result = 2;
+                toSend=new JSONObject();
+                sessionManager.setInfo(latitude,longitude);
+                toSend.put("KEY_LATITUDE",latitude);
+                toSend.put("KEY_LONGITUDE",longitude);
+                httpConnector=new HttpConnector(toSend,addressURL,"POST",context);
+                flag=httpConnector.makeConnection();
+                if(flag==1)
+                {
+                    responseString=httpConnector.convertInputStream();
                 }
             } catch (Exception e) {
                 Log.e("tag", e.toString());
             }
-            return result;
+            return flag;
         }
 
         protected void onPostExecute(Integer res) {
+            if(httpConnector!=null)
+                httpConnector.close();
             if (pd.isShowing())
                 pd.dismiss();
             if (res == 2) {
                 Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_SHORT).show();
             } else if (res == 1) {
+                Log.e("response from server",responseString);
+                parseResult(responseString);
                 listView = (ListView) findViewById(R.id.listview);
                 MyAdapter adapter = new MyAdapter(getApplicationContext(), StoreItms);
                 listView.setAdapter(adapter);
                 listView.setOnItemClickListener(new DrawerItemClickListener());
-                session.setInfo(latitude,longitude);
-                /*for(StoreDrawerItem store:StoreItms)
-                {
-                    store.loadImage(adapter);
-                }*/
             } else {
+                Toast.makeText(getApplicationContext(), "Failed to fetch data", Toast.LENGTH_SHORT).show();
                 Log.e("TAG", "Failed to fetch data!");
             }
         }
     }
 
-    private String convertInputStreamToString(InputStream inputStream) throws IOException {
-
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-
-        StringBuffer sb = new StringBuffer("");
-        String line = "";
-        String NL = System.getProperty("line.separator");
-        while ((line = bufferedReader.readLine()) != null) {
-            sb.append(line+NL);
-        }
-
-            /* Close Stream */
-        if (null != inputStream) {
-            inputStream.close();
-        }
-
-        return sb.toString();
-    }
-
     private void parseResult(String returnString) {
-        spinnerValues = new ArrayList<String>();
-        spinnerSubs=new ArrayList<String>();
-        MerchantId=new ArrayList<Integer>();
-        StoreItms = new ArrayList<StoreDrawerItem>();
+        spinnerValues.clear();
+        spinnerSubs.clear();
+        MerchantId.clear();
+        StoreItms.clear();
         try {
             JSONArray jArray = new JSONObject(returnString.toString()).getJSONArray("stores");
             for(int i=0;i<jArray.length();i++) {
@@ -477,5 +414,4 @@ public class Store extends BaseActivity implements ConnectionCallbacks,
         listView.setAdapter(null);
         super.onDestroy();
     }
-
 }
