@@ -32,53 +32,64 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import pullaapps.example.com.myqueue.network.HttpConnector;
+
 
 public class TabFragment extends Fragment {
 
-    String name;
+    private String diet_name;
 	Activity activity;
 	List<String> itemNames;
     List<Integer> itemId;
 	List<Integer> itemPrices;
 	ArrayList<MealDrawerItem> mealItems;
     ListView listView;
-    View view;
-    String merchant_id;
-    String merchant_name;
+    private View view;
+    private String merchant_id;
+    private String merchant_name;
     private Communicator communicator;
     public String TAG="Fragment_State";
-    String Lat;
-    String Lon;
-    SessionManager sessionManager;
-    public MealAdapter mealAdapter;
-	public void onAttach(Activity activity)
+    private String Lat;
+    private String Lon;
+    private SessionManager sessionManager;
+    private MealAdapter mealAdapter;
+    private HashMap<String, String> location;
+    private HashMap<String,String> merchant;
+    private final String mealURL = "http://myproject.byethost8.com/RetrieveItem.php";
+    private Context context;
+
+    @Override
+    public void onAttach(Activity activity)
 	{
 		super.onAttach(activity);
         if (activity instanceof Communicator) {
             communicator = (Communicator) activity;
         } else {
             throw new ClassCastException(activity.toString()
-                    + " must implemenet MyListFragment.Communicator");
+                    + " must implement MyListFragment.Communicator");
         }
+        context=activity.getApplicationContext();
 	}
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activity=getActivity();
         sessionManager=new SessionManager(activity);
         Bundle bundle = getArguments();
-        name = bundle.getString("name");
-        HashMap<String, String> location;
+        diet_name = bundle.getString("KEY_DIET");
         location=sessionManager.getLocationInfo();
         Lat=location.get("latitude");
         Lon=location.get("longitude");
-        HashMap<String,String> merchant;
         merchant=sessionManager.getMerchantInfo();
         merchant_id=merchant.get("merchant_id");
         merchant_name=merchant.get("merchant_name");
-        final String url = "http://myproject.byethost8.com/RetrieveItem.php";
-        Log.e("Asynctask","increate"+" "+name);
-        new CustomHttpRequest().execute(url);
-
+        Log.e("Asynctask","increate"+" "+diet_name);
+        itemNames=new ArrayList<String>();
+        itemPrices=new ArrayList<Integer>();
+        itemId=new ArrayList<Integer>();
+        mealItems=new ArrayList<MealDrawerItem>();
+        new CustomHttpRequest().execute(mealURL);
     }
 
     @Override
@@ -127,69 +138,53 @@ public class TabFragment extends Fragment {
 
     }
 
-    public class CustomHttpRequest extends AsyncTask<String, Void, Integer> {
+     class CustomHttpRequest extends AsyncTask<String, Void, Integer> {
 
-        Integer result=0;
-        String responseString;
+        private Integer result=0;
+        private String responseString;
         private TransparentProgressDialog pDialog;
+        private HttpConnector httpConnector;
+        private JSONObject toSend;
+
         protected void onPreExecute() {
             pDialog = new TransparentProgressDialog(getActivity(),R.drawable.spinner,"Retrieving Yummy Meals..");
             pDialog.show();
         }
 
         protected Integer doInBackground(String... args) {
-
-            InputStream inputStream;
             try {
-                ConnectivityManager cm =
-                        (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-                NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-                boolean isConnected = activeNetwork != null &&
-                        activeNetwork.isConnectedOrConnecting();
-                if (isConnected) {
-                    Log.d("Tag","In doBackground()");
-                    URL url = new URL("http://myproject.byethost8.com/RetrieveItem.php");
-                    HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-                    httpURLConnection.setDoOutput(true);
-                    httpURLConnection.setRequestMethod("POST");
-                    String param = "KEY_MERCHANT=" + merchant_name + "&KEY_DIET=" + name;
-                    httpURLConnection.setFixedLengthStreamingMode(param.getBytes().length);
-                    PrintWriter out = new PrintWriter(httpURLConnection.getOutputStream());
-                    out.print(param);
-                    out.flush();
-                    out.close();
-                    int statusCode = httpURLConnection.getResponseCode();
-                    if (statusCode == 200) {
-                        inputStream = new BufferedInputStream(httpURLConnection.getInputStream());
-                        responseString = convertInputStreamToString(inputStream);
-                        Log.d("tag", responseString);
-                        parseResult(responseString);
-                        result = 1;
-                    } else {
-                        result = 0;
-                    }
-                }
-                else
+                toSend = new JSONObject();
+                toSend.put("KEY_MERCHANT", merchant_name);
+                toSend.put("KEY_DIET", diet_name);
+                httpConnector = new HttpConnector(toSend, mealURL, "POST", context);
+                result=httpConnector.makeConnection();
+                if(result==1)
                 {
-                    result=2;
+                    responseString=httpConnector.convertInputStream();
                 }
-                }catch(Exception e){
-                    Log.e("tag", e.toString());
-                }
+            }catch (Exception e)
+            {
+                e.printStackTrace();
+            }
             return result;
         }
 
         protected void onPostExecute(Integer res) {
+            if(httpConnector!=null)
+                httpConnector.close();
+
             if (pDialog.isShowing())
                 pDialog.dismiss();
+
             if(res==2)
             {
                 Toast.makeText(activity,"No Internet Connection",Toast.LENGTH_SHORT).show();
             }
+
             else if (res == 1) {
+                    parseResult(responseString);
+                    mealItems.clear();
                     listView=(ListView)view.findViewById(R.id.listView);
-                    mealItems=new ArrayList<MealDrawerItem>();
                     for(int i=0;i<itemNames.size();i++)
                     {
                         mealItems.add(new MealDrawerItem(itemNames.get(i),itemPrices.get(i).intValue()));
@@ -200,35 +195,18 @@ public class TabFragment extends Fragment {
                     listView.setOnItemClickListener(new DrawerItemClickListener());
 					Log.e("tag_check","After Setting Adapter");
                     communicator.setMealAdapter(mealAdapter);
-                } else {
+                }
+            else {
                 Log.e("TAG", "Failed to fetch data!");
             }
         }
     }
-    private String convertInputStreamToString(InputStream inputStream) throws IOException {
-
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-
-        StringBuffer sb = new StringBuffer("");
-        String line = "";
-        String NL = System.getProperty("line.separator");
-        while ((line = bufferedReader.readLine()) != null) {
-            sb.append(line+NL);
-        }
-
-            /* Close Stream */
-        if (null != inputStream) {
-            inputStream.close();
-        }
-
-        return sb.toString();
-    }
 
     private void parseResult(String returnString) {
         try {
-            itemNames=new ArrayList<String>();
-            itemPrices=new ArrayList<Integer>();
-            itemId=new ArrayList<Integer>();
+            itemNames.clear();
+            itemPrices.clear();
+            itemId.clear();
             JSONArray jArray = new JSONObject(returnString).getJSONArray("dishes");
             Log.d("Count Tag ", "Length " + jArray.length());
             for (int i = 0; i < jArray.length(); i++) {
@@ -246,7 +224,7 @@ public class TabFragment extends Fragment {
     public void onDestroy()
     {
         super.onDestroy();
-        mealItems.clear();
+        listView.setAdapter(null);
     }
 
     public void onDetach()
@@ -259,9 +237,5 @@ public class TabFragment extends Fragment {
    {
        return mealAdapter;
    }
-   
-   public int getnum()
-   {
-	   return 2;
-   }
+
 }

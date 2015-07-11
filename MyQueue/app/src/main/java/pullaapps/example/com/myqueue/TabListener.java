@@ -10,18 +10,17 @@ import android.os.Bundle;
  */
 public class TabListener implements ActionBar.TabListener {
 
-    Fragment fragment;
-    String name;
-    public TabListener(String name)
+    String diet_name;
+    public TabListener(String diet_name)
     {
-        this.name=name;
+        this.diet_name=diet_name;
     }
 
     @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
         Fragment tabFragment=new TabFragment();
         Bundle bundle=new Bundle();
-        bundle.putString("name",name);
+        bundle.putString("KEY_DIET",diet_name);
         tabFragment.setArguments(bundle);
         ft.replace(R.id.fragment_container, tabFragment);
     }

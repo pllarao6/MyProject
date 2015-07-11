@@ -54,7 +54,7 @@ public class MealAdapter extends BaseAdapter implements Serializable,Filterable 
             mealHolder=new MealHolder();
 
             LayoutInflater mInflater = (LayoutInflater) mContext
-                    .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = mInflater.inflate(R.layout.mealitem, null);
             
             mealHolder.title_item = (TextView) convertView.findViewById(R.id.text_item_name);

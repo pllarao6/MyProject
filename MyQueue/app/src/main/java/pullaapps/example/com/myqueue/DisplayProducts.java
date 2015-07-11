@@ -23,15 +23,15 @@ import java.util.List;
 
 public class DisplayProducts extends BaseActivity implements TabFragment.Communicator{
 
-    ActionBar actionBar;
-    Bundle bundle;
-    String lat;
-    String lon;
-    public View inflatedView;
-    SessionManager sessionManager;
+    private ActionBar actionBar;
+    private String lat;
+    private String lon;
+    private View inflatedView;
+    private SessionManager sessionManager;
     private MealAdapter mealAdapter;
     private SearchView searchView;
     private MenuItem searchMenuItem;
+    private HashMap<String, String> location;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +39,6 @@ public class DisplayProducts extends BaseActivity implements TabFragment.Communi
         inflatedView=getLayoutInflater().inflate(R.layout.activity_display_products,frameLayout);
         actionBar=getActionBar();
         sessionManager=new SessionManager(this);
-        HashMap<String, String> location;
         location=sessionManager.getLocationInfo();
         lat=location.get("latitude");
         lon=location.get("longitude");

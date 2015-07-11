@@ -263,7 +263,6 @@ public class Store extends BaseActivity implements ConnectionCallbacks,
     public void onLocationChanged(Location location) {
         Log.d("Tag","in OnlocationChanged");
         if (mGoogleApiClient.isConnected() && location != null) {
-            Log.d("Tag","InonlocationChangedCondition");
             mLastLocation = location;
             mLatitude = mLastLocation.getLatitude();
             mLongitude =mLastLocation.getLongitude();
@@ -283,13 +282,11 @@ public class Store extends BaseActivity implements ConnectionCallbacks,
 
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
-
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
             //Toast.makeText(getApplicationContext(), "Store " + spinnerValues.get(pos).toString(), Toast.LENGTH_LONG).show();
             getDetails(pos);
         }
-
     }
 
 
