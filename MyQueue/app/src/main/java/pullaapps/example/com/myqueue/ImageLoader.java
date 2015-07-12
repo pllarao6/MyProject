@@ -25,6 +25,7 @@ import java.util.concurrent.Executors;
 /**
  * Created by Prathyusha on 26/6/2015.
  */
+
 public class ImageLoader {
     MemoryCache memoryCache=new MemoryCache();
     FileCache fileCache;

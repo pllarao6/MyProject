@@ -23,10 +23,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import org.json.JSONObject;
-
-import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -44,9 +41,9 @@ public class DisplayItem extends FragmentActivity implements AdapterView.OnItemS
     private int baseprice;
     private Button btn_meal;
     final String[] qtyValues = {"1","2","3","4","5","6","7","8","9","10"};
-    private int count;
+    private int quantity;
     private Bundle bundle;
-    String Image_URL ="http://myproject.byethost8.com/images/";
+    String imageURL ="http://myproject.byethost8.com/images/";
     final String updateCartURL="http://myproject.byethost8.com/Cart.php";
     private String itemId;
     private SessionManager sessionManager;
@@ -63,7 +60,7 @@ public class DisplayItem extends FragmentActivity implements AdapterView.OnItemS
         context=getApplicationContext();
         bundle=getIntent().getExtras();
         userid=bundle.getString("CustomerId");
-        count=1;
+        quantity=1;
         imageView = (ImageView) findViewById(R.id.imageView);
         item_name=(TextView)findViewById(R.id.text_item_name);
         item_price=(TextView)findViewById(R.id.price_value);
@@ -75,9 +72,10 @@ public class DisplayItem extends FragmentActivity implements AdapterView.OnItemS
         spinner.setAdapter(aa);
         spinner.setOnItemSelectedListener(this);
         imageLoader=new ImageLoader(context);
+
         if(bundle!=null)
         {
-            Image_URL= Image_URL+bundle.getString("ItemName")+".jpg";
+            imageURL= imageURL + bundle.getString("ItemName")+".jpg";
             //Toast.makeText(getApplicationContext(), extras.getString("MerchantId") + " " + extras.getString("ItemName") + " " + extras.getInt("ItemPrice"), Toast.LENGTH_LONG).show();
             item_name.setText(bundle.getString("ItemName"));
             item_price.setText(bundle.getString("ItemPrice"));
@@ -86,8 +84,9 @@ public class DisplayItem extends FragmentActivity implements AdapterView.OnItemS
             itemId=bundle.getString("ItemId");
             //task=new GetXMLTask();
             //task.execute(new String[] { Image_URL});
-            imageLoader.DisplayImage(Image_URL,imageView);
+            imageLoader.DisplayImage(imageURL,imageView);
         }
+
         getActionBar().setDisplayHomeAsUpEnabled(true);
         btn_meal=(Button)findViewById(R.id.button_meal);
         btn_meal.setOnClickListener(new View.OnClickListener() {
@@ -97,11 +96,10 @@ public class DisplayItem extends FragmentActivity implements AdapterView.OnItemS
                 try {
                     toSend = new JSONObject();
                     toSend.put("ItemId", Integer.parseInt(itemId));
-                    toSend.put("Quant", count);
+                    toSend.put("Quant", quantity);
                     toSend.put("MerchantId", Integer.parseInt(bundle.getString("Key_MerchantId")));
                     toSend.put("CustomerId", Integer.parseInt(userid));
-                    toSend.put("TotalItemPrice", Integer.parseInt(item_total_price.getText().toString()));
-                } catch (Exception e) {
+                   } catch (Exception e) {
                     e.printStackTrace();
                 }
                 new CustomHttpRequest().execute(toSend);
@@ -112,7 +110,7 @@ public class DisplayItem extends FragmentActivity implements AdapterView.OnItemS
     public void onItemSelected(AdapterView<?> parent, View view, int position,
                                long id) {
         item_total_price.setText(String.valueOf(baseprice*Integer.parseInt(qtyValues[position])));
-        count=Integer.parseInt(qtyValues[position]);
+        quantity=Integer.parseInt(qtyValues[position]);
         //Toast.makeText(getApplicationContext(),item_total_price.getText(),Toast.LENGTH_SHORT).show();
     }
 

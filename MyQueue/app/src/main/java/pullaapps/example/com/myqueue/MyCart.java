@@ -38,37 +38,41 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import pullaapps.example.com.myqueue.network.HttpConnector;
+
 
 public class MyCart extends BaseActivity1 {
 
-    ArrayList<Meal> cart_list;
-    int count=0;
+    private ArrayList<Meal> cart_list;
     int totalCartItemCount =0;
     int totalCartValue = 0;
-    final String[] qtyValues = {"1","2","3","4","5","6","7","8","9","10"};
-    final String URL="http://myproject.byethost8.com/CartRetrieve.php";
-    final String updateURL="http://myproject.byethost8.com/UpdateCart.php";
-    final String deleteURL="http://myproject.byethost8.com/DeleteCart.php";
+    private final String[] qtyValues = {"1","2","3","4","5","6","7","8","9","10"};
+    private final String selectURL="http://myproject.byethost8.com/RetrieveCart.php";
+    private final String updateURL="http://myproject.byethost8.com/UpdateCart.php";
+    private final String deleteURL="http://myproject.byethost8.com/DeleteCart.php";
     boolean isFirst;
-    int spinner_pos;
-    int parent_pos;
+    private int spinner_pos;
+    private int parent_pos;
     custom_list_one custom_adpter;
-    TextView itemText;
-    TextView itemCount;
-    TextView totalAmount;
-    Button checkout;
-    ListView lv1;
+    private TextView itemText;
+    private TextView itemCount;
+    private TextView totalAmount;
+    private Button checkout;
+    private ListView lv1;
     TextView cartEmpty;
-    String temp;
-    public View inflatedView;
-    SessionManager sessionManager;
-    String lat;
-    String lon;
-    int userid;
+    private String temp;
+    private View inflatedView;
+    private SessionManager sessionManager;
+    private String lat;
+    private String lon;
+    private int userid;
+    private Context context;
+    private HashMap<String, String> location;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         inflatedView=getLayoutInflater().inflate(R.layout.activity_my_cart, frameLayout);
+        context=getApplicationContext();
         getCartData("create");
         sessionManager=new SessionManager(this);
         isFirst=true;
@@ -79,12 +83,10 @@ public class MyCart extends BaseActivity1 {
         lv1 = (ListView) findViewById(R.id.listView1);
         cartEmpty = (TextView) findViewById(R.id.cart_empty);
         cart_list = new ArrayList<Meal>();
-        HashMap<String, String> location;
         location=sessionManager.getLocationInfo();
         lat=location.get("latitude");
         lon=location.get("longitude");
         userid=Integer.parseInt(sessionManager.getUserId());
-        sessionManager=new SessionManager(this);
         checkout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -204,8 +206,6 @@ public class MyCart extends BaseActivity1 {
 
         String button_name;
         Meal prod_name;
-        int tempQty;
-        int tempValue;
 
         public MyPersonalClickListener(String button_name, Meal prod_name) {
             this.prod_name = prod_name;
@@ -227,7 +227,7 @@ public class MyCart extends BaseActivity1 {
     public void getCartData(String x)
     {
         if(x=="create")
-        new CustomHttpRequest().execute(URL,"create");
+        new CustomHttpRequest().execute(selectURL,"create");
         if (x=="update")
            new CustomHttpRequest().execute(updateURL,"update");
     }
@@ -239,10 +239,11 @@ public class MyCart extends BaseActivity1 {
 
     public class CustomHttpRequest extends AsyncTask<String,Void,Integer>
     {
-        InputStream inputStream;
-        int result;
-        String responseString;
+        private int result;
+        private String responseString;
         private TransparentProgressDialog pDialog;
+        private JSONObject toSend;
+        private HttpConnector httpConnector;
         protected void onPreExecute()
         {
             pDialog = new TransparentProgressDialog(MyCart.this,R.drawable.spinner,"Updating Cart..");
@@ -251,102 +252,70 @@ public class MyCart extends BaseActivity1 {
 
         protected Integer doInBackground(String... args)
         {
+            temp=args[1];
             try {
-                ConnectivityManager cm =
-                        (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-
-                NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-                boolean isConnected = activeNetwork != null &&
-                        activeNetwork.isConnectedOrConnecting();
-                if (isConnected) {
-                    Log.d("Tag","In doBackground()");
-                    temp=args[1];
-                    java.net.URL url = new URL(args[0]);
-                    HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-                    httpURLConnection.setDoOutput(true);
-                    httpURLConnection.setRequestMethod("POST");
-                    String param=null;
-                    if(args[1]=="create") {
-                       param = "KEY_CUSTOMER=" + userid + "&Status=" + 0+"&Key_Lat="+ lat +"&Key_Lon="+ lon ;
-                    }
-                    else if(args[1]=="update")
-                    {
-                        int TotalItemPrice=spinner_pos*(cart_list.get(parent_pos).getItemPrice());
-                        Log.d("Tag_TotalItemPrice",TotalItemPrice+"");
-                        param="ItemId="+cart_list.get(parent_pos).getID()+"&Quant="+spinner_pos+"&Key_Merchant="+ cart_list.get(parent_pos).getMerchantId() +"&Key_Customer=" + userid + "&Key_TotalItemPrice="+TotalItemPrice
-                                            +"&Key_Lat="+lat+"&Key_Lon="+lon+ "&Status=" + 0;
+                toSend=new JSONObject();
+                if(args[1]=="create") {
+                    toSend.put("KEY_CUSTOMER", userid);
+                    toSend.put("Key_Lat", lat);
+                    toSend.put("Key_Lon", lon);
+                    httpConnector=new HttpConnector(toSend,args[0],"POST",context);
+                }
+                else if(args[1]=="update"){
+                    int TotalItemPrice=spinner_pos*(cart_list.get(parent_pos).getItemPrice());
+                    Log.d("Tag_TotalItemPrice",TotalItemPrice+"");
+                    toSend.put("ItemId",cart_list.get(parent_pos).getID());
+                    toSend.put("Quant",spinner_pos);
+                    toSend.put("Key_Merchant",cart_list.get(parent_pos).getMerchantId());
+                    toSend.put("Key_Customer",userid);
+                    toSend.put("Key_Lat",lat);
+                    toSend.put("Key_Lon",lon);
+                    httpConnector=new HttpConnector(toSend,args[0],"POST",context);
                     }
                     else if(args[1]=="delete")
                     {
-                        param="ItemId="+args[2]+"&Key_Customer=" + userid +  "&Status=" + 0 + "&Key_Merchant=" + args[3]+"&Key_Lat="+ lat +"&Key_Lon="+ lon;
+                        toSend.put("ItemId",args[2]);
+                        toSend.put("Key_Customer",userid);
+                        toSend.put("Key_Merchant",args[3]);
+                        toSend.put("Key_Lat", lat);
+                        toSend.put("Key_Lon",lon);
+                        httpConnector=new HttpConnector(toSend,args[0],"POST",context);
                     }
-                    httpURLConnection.setFixedLengthStreamingMode(param.getBytes().length);
-                    PrintWriter out = new PrintWriter(httpURLConnection.getOutputStream());
-                    out.print(param);
-                    out.flush();
-                    out.close();
-                    int statusCode = httpURLConnection.getResponseCode();
-                    if (statusCode == 200) {
-                        inputStream = new BufferedInputStream(httpURLConnection.getInputStream());
-                        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-                        responseString = convertInputStreamToString(inputStream);
-                        Log.e("tag", responseString);
-                        parseResult(responseString);
-                        result = 1;
-                    } else {
-                        result = 0;
+                     result= httpConnector.makeConnection();
+                    if (result==1) {
+                        responseString = httpConnector.convertInputStream();
                     }
-                }
-                else
-                {
-                    result=2;
-                }
-            }catch(Exception e){
-                Log.e("tag", e.toString());
-            }
+                }catch(Exception e){
+                    Log.e("tag", e.toString());
+                    }
             return result;
         }
 
         protected void onPostExecute(Integer res)
         {
+            if(httpConnector!=null)
+                httpConnector.close();
             if (pDialog.isShowing())
                 pDialog.dismiss();
             if(res==2)
             {
-
+                Toast.makeText(context,"No Internet connection..Try again",Toast.LENGTH_SHORT).show();
             }
             else if(res==1)
             {
+                    parseResult(responseString);
                     if(temp=="delete")
                        updateUI1();
                     else
-                    updateUI();
+                       updateUI();
             }
             else
             {
-
+                Toast.makeText(context,"Failed to update data",Toast.LENGTH_SHORT).show();
             }
         }
     }
 
-    private String convertInputStreamToString(InputStream inputStream) throws IOException {
-
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-
-        StringBuffer sb = new StringBuffer("");
-        String line = "";
-        String NL = System.getProperty("line.separator");
-        while ((line = bufferedReader.readLine()) != null) {
-            sb.append(line+NL);
-        }
-
-            /* Close Stream */
-        if (null != inputStream) {
-            inputStream.close();
-        }
-
-        return sb.toString();
-    }
 
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
